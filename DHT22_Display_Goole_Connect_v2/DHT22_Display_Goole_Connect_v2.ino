@@ -58,8 +58,8 @@ void display_init() {
 }
 
 void WiFi_Connect() {
-  char ssid[20] = "nobug_home";
-  char password[20] = "bang8813";
+  char ssid[20] = "*****";
+  char password[20] = "******";
 
   display.init();
   display.flipScreenVertically();
@@ -150,7 +150,8 @@ void sendData2Server(float x, float y)
 {
   const char* host = "script.google.com";
   const int httpsPort = 443;
-  char DevName[20]= "test004";
+  String DevName= "방효식_거실";
+  String encodeDevName;
   String GAS_ID = "AKfycbwssR8XseF7Q274UCu-pjHNwSeBG0eDg3hBDimuFsn0LeNpkUQ1";  // Replace by your GAS service id
 
   Serial.print("connecting to ");
@@ -167,8 +168,8 @@ void sendData2Server(float x, float y)
   sprintf(string_x,"%0.2f",x);
   sprintf(string_y,"%0.2f",y);
   
-  
-  String url = "/macros/s/" + GAS_ID + "/exec?Name="+DevName+"&Temp=" + string_x + "&Humi=" + string_y;
+  encodeDevName = urlencode(DevName);
+  String url = "/macros/s/" + GAS_ID + "/exec?Name="+encodeDevName+"&Temp=" + string_x + "&Humi=" + string_y;
   Serial.print("requesting URL: ");
   Serial.println(url);
 
@@ -193,4 +194,38 @@ void sendData2Server(float x, float y)
   } else {
     Serial.println("esp8266/Arduino CI has failed");
   }
+}
+
+String urlencode(String str)
+{
+    String encodedString="";
+    char c;
+    char code0;
+    char code1;
+    char code2;
+    for (int i =0; i < str.length(); i++){
+      c=str.charAt(i);
+      if (c == ' '){
+        encodedString+= '+';
+      } else if (isalnum(c)){
+        encodedString+=c;
+      } else{
+        code1=(c & 0xf)+'0';
+        if ((c & 0xf) >9){
+            code1=(c & 0xf) - 10 + 'A';
+        }
+        c=(c>>4)&0xf;
+        code0=c+'0';
+        if (c > 9){
+            code0=c - 10 + 'A';
+        }
+        code2='\0';
+        encodedString+='%';
+        encodedString+=code0;
+        encodedString+=code1;
+        //encodedString+=code2;
+      }
+      yield();
+    }
+    return encodedString;  
 }
