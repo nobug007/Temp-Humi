@@ -27,7 +27,15 @@ DHT dht(DHTPIN, DHTTYPE);
 ////  WiFI connection
 
 WiFiClientSecure client;
+char ssid[20] = "";
+char password[20] = "";
 
+String DevName= "거실";
+String Loc = "서울";
+String Owner = "방효식";
+String Info = "테스트";
+String Mac = "";
+String GAS_ID = "AKfycbzm2u6Smvu4WpU-DRM4zPJ586Wa6P8hgzr6ptAJiC3X0OIJG9YbEn09Ld2OlEv1V3I5cg";  // Replace by your GAS service id
 
 //=======================================================================
 //                    Power on setup
@@ -58,8 +66,10 @@ void display_init() {
 }
 
 void WiFi_Connect() {
-  char ssid[20] = "*****";
-  char password[20] = "******";
+
+   ESP8266WiFiClass Wifi8266;
+   Mac = Wifi8266.macAddress();
+
 
   display.init();
   display.flipScreenVertically();
@@ -150,9 +160,6 @@ void sendData2Server(float x, float y)
 {
   const char* host = "script.google.com";
   const int httpsPort = 443;
-  String DevName= "방효식_거실";
-  String encodeDevName;
-  String GAS_ID = "AKfycbwssR8XseF7Q274UCu-pjHNwSeBG0eDg3hBDimuFsn0LeNpkUQ1";  // Replace by your GAS service id
 
   Serial.print("connecting to ");
   Serial.println(host); 
@@ -167,9 +174,9 @@ void sendData2Server(float x, float y)
 
   sprintf(string_x,"%0.2f",x);
   sprintf(string_y,"%0.2f",y);
-  
-  encodeDevName = urlencode(DevName);
-  String url = "/macros/s/" + GAS_ID + "/exec?Name="+encodeDevName+"&Temp=" + string_x + "&Humi=" + string_y;
+ 
+  String url = "/macros/s/" + GAS_ID + "/exec?Name="+urlencode(DevName)+"&Temp=" + string_x + "&Humi=" + string_y;
+  url = url + "&Loc="+ urlencode(Loc) + "&Owner=" + urlencode(Owner) + "&Info=" + urlencode(Info)+ "&Mac=" + Mac;
   Serial.print("requesting URL: ");
   Serial.println(url);
 
@@ -189,11 +196,7 @@ void sendData2Server(float x, float y)
     }
   }
   String line = client.readStringUntil('\n');
-  if (line.startsWith("{\"state\":\"success\"")) {
-    Serial.println("esp8266/Arduino CI successfull!");
-  } else {
-    Serial.println("esp8266/Arduino CI has failed");
-  }
+  Serial.println(line);
 }
 
 String urlencode(String str)
