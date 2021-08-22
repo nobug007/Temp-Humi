@@ -27,15 +27,15 @@ DHT dht(DHTPIN, DHTTYPE);
 ////  WiFI connection
 
 WiFiClientSecure client;
-char ssid[20] = "";
-char password[20] = "";
+char ssid[20] = "nobug_home";
+char password[20] = "bang8813";
 
-String DevName= "거실";
+String DevName= "내방";
 String Loc = "서울";
 String Owner = "방효식";
 String Info = "테스트";
 String Mac = "";
-String GAS_ID = "AKfycbzm2u6Smvu4WpU-DRM4zPJ586Wa6P8hgzr6ptAJiC3X0OIJG9YbEn09Ld2OlEv1V3I5cg";  // Replace by your GAS service id
+String GAS_ID = "AKfycbwurzrFbKqJhpBF5b3cX6m_6mZqmeuQs4TLibeGUr5nmoTEi2C6ukAa4f5w5RfFpTK8Xg";  // Replace by your GAS service id
 
 //=======================================================================
 //                    Power on setup
@@ -175,7 +175,7 @@ void sendData2Server(float x, float y)
   sprintf(string_x,"%0.2f",x);
   sprintf(string_y,"%0.2f",y);
  
-  String url = "/macros/s/" + GAS_ID + "/exec?Name="+urlencode(DevName)+"&Temp=" + string_x + "&Humi=" + string_y;
+  String url = "/macros/s/" + GAS_ID + "/exec?ID="+urlencode(DevName)+"&Temp=" + string_x + "&Humi=" + string_y;
   url = url + "&Loc="+ urlencode(Loc) + "&Owner=" + urlencode(Owner) + "&Info=" + urlencode(Info)+ "&Mac=" + Mac;
   Serial.print("requesting URL: ");
   Serial.println(url);
